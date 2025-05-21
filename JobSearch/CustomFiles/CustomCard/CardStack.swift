@@ -1,0 +1,161 @@
+//
+//  CardStack.swift
+//  JobSearch
+//
+//  Created by Walkar, Karan on 21/03/25.
+//
+
+import SwiftUI
+
+public struct CardStack<Direction, ID: Hashable, Data: RandomAccessCollection, Content: View>: View
+where Data.Index: Hashable {
+
+  @Environment(\.cardStackConfiguration) private var configuration: CardStackConfiguration
+  @State private var currentIndex: Data.Index
+
+  private let direction: (Double) -> Direction?
+  private let data: Data
+  private let id: KeyPath<Data.Element, ID>
+  private let onSwipe: (Data.Element, Direction) -> Void
+  private let content: (Data.Element, Direction?, Bool) -> Content
+
+  public init(
+    direction: @escaping (Double) -> Direction?,
+    data: Data,
+    id: KeyPath<Data.Element, ID>,
+    onSwipe: @escaping (Data.Element, Direction) -> Void,
+    @ViewBuilder content: @escaping (Data.Element, Direction?, Bool) -> Content
+  ) {
+    self.direction = direction
+    self.data = data
+    self.id = id
+    self.onSwipe = onSwipe
+    self.content = content
+
+    self._currentIndex = State<Data.Index>(initialValue: data.startIndex)
+  }
+
+  @ViewBuilder private func cardViewOrEmpty(index: Data.Index) -> some View {
+    let relativeIndex = self.data.distance(from: self.currentIndex, to: index)
+    if relativeIndex >= 0 && relativeIndex < self.configuration.maxVisibleCards {
+       self.card(index: index, relativeIndex: relativeIndex)
+    } else {
+       EmptyView()
+    }
+  }
+
+  public var body: some View {
+    ZStack {
+      ForEach(data.indices.reversed(), id: \.self) { index in
+        cardViewOrEmpty(index: index)
+          .zIndex(Double(self.data.distance(from: index, to: self.data.startIndex)))
+      }
+    }
+  }
+
+
+  private func card(index: Data.Index, relativeIndex: Int) -> some View {
+    CardView(
+      direction: direction,
+      isOnTop: relativeIndex == 0,
+      onSwipe: { direction in
+        self.onSwipe(self.data[index], direction)
+        self.currentIndex = self.data.index(after: index)
+      },
+      content: { direction in
+        self.content(self.data[index], direction, relativeIndex == 0)
+          .offset(
+            x: 0,
+            y: CGFloat(relativeIndex) * self.configuration.cardOffset
+          )
+          .scaleEffect(
+            1 - self.configuration.cardScale * CGFloat(relativeIndex),
+            anchor: .bottom
+          )
+      }
+    )
+  }
+
+}
+
+extension CardStack where Data.Element: Identifiable, ID == Data.Element.ID {
+
+  public init(
+    direction: @escaping (Double) -> Direction?,
+    data: Data,
+    onSwipe: @escaping (Data.Element, Direction) -> Void,
+    @ViewBuilder content: @escaping (Data.Element, Direction?, Bool) -> Content
+  ) {
+    self.init(
+      direction: direction,
+      data: data,
+      id: \Data.Element.id,
+      onSwipe: onSwipe,
+      content: content
+    )
+  }
+
+}
+
+//extension CardStack where Data.Element: Hashable, ID == Data.Element {
+//
+//  public init(
+//    direction: @escaping (Double) -> Direction?,
+//    data: Data,
+//    onSwipe: @escaping (Data.Element, Direction) -> Void,
+//    @ViewBuilder content: @escaping (Data.Element, Direction?, Bool) -> Content
+//  ) {
+//    self.init(
+//      direction: direction,
+//      data: data,
+//      id: \Data.Element.self,
+//      onSwipe: onSwipe,
+//      content: content
+//    )
+//  }
+//
+//}
+
+//#Preview {
+//    CardStack()
+//}
+
+
+struct CardStack_Previews: PreviewProvider {
+
+  // Create a simple mock configuration to use in preview
+  static var previewConfiguration: CardStackConfiguration {
+      return CardStackConfiguration(maxVisibleCards: 3, swipeThreshold: 0.5, cardOffset: 10, cardScale: 0.05, animation: .easeInOut)
+  }
+
+  static var previews: some View {
+    let sampleData: [SampleData] = [
+      SampleData(id: 1, title: "Card 1"),
+      SampleData(id: 2, title: "Card 2"),
+      SampleData(id: 3, title: "Card 3")
+    ]
+    
+    return CardStack(
+      direction: { degree in
+        if degree > 45 { return "Right" }
+        if degree < -45 { return "Left" }
+        return nil
+      },
+      data: sampleData,
+      onSwipe: { item, direction in
+        print("Swiped \(item.title) to \(direction)")
+      }) { item, direction, isOnTop in
+        Text(item.title)
+          .frame(width: 300, height: 400)
+          .background(isOnTop ? Color.green : Color.blue)
+          .cornerRadius(10)
+          .foregroundColor(.white)
+      }
+      .environment(\.cardStackConfiguration, previewConfiguration)
+  }
+}
+
+struct SampleData: Identifiable {
+  let id: Int
+  let title: String
+}
