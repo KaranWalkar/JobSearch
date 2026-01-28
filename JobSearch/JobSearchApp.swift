@@ -24,9 +24,17 @@ struct JobSearchApp: App {
     }()
 
     var body: some Scene {
+//        WindowGroup {
+//            ContentView()
+//        }
+//        .modelContainer(sharedModelContainer)
         WindowGroup {
             ContentView()
         }
-        .modelContainer(sharedModelContainer)
+        .modelContainer(for: [
+            Resume.self,
+            Skill.self,
+            Experience.self
+        ])
     }
 }

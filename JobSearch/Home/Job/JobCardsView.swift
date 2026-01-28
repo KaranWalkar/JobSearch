@@ -17,8 +17,8 @@ struct Job: Identifiable {
     let requirement: String?
     let skill: String?
     let qualification: String?
-    var isBookmark: Bool?
-    var isApplied: Bool?
+    var isBookmark: Bool //= false
+    var isApplied: Bool
     
     static var mockData: [Job] = [
 //        Job(logo: Image(systemName: "profile.circle"), companyName: "Pinterest", designation: "iOS Developer", jobType: "Part Time", salary: "₹00K - ₹99K", qualification: "", isBookmark: false, isApplied: false),
@@ -30,6 +30,7 @@ struct Job: Identifiable {
     ]
 }
 
+/*
 struct MainCardView: View {
     var job: Job
     var isTopCard: Bool
@@ -47,13 +48,13 @@ struct MainCardView: View {
               Spacer()
               
               Button(action: {
-                  tempJob.isBookmark = true
-//                  self.job = tempJob
+                  tempJob.isBookmark.toggle()
               }) {
                   HStack {
-                      Image(systemName: "bookmark")
+//                      Image(systemName: "bookmark")
+                      Image(systemName: tempJob.isBookmark ? "bookmark.fill" : "bookmark")
                           .imageScale(.large)
-                          .foregroundColor(.black)
+                          .foregroundColor(job.isBookmark ? .black : .gray)
                   } //: HStack
                   .padding()
               } //: Button
@@ -64,7 +65,7 @@ struct MainCardView: View {
           } //: HStack
           .frame(height: 50)
           
-          Spacer()
+//          Spacer()
           
           VStack(alignment: .leading, spacing: 15) {
               CustomText(fontText: self.job.companyName, fontSize: 24)
@@ -74,14 +75,14 @@ struct MainCardView: View {
                   .textCase(.uppercase)
                   .bold()
 //                  .foregroundColor(Color(hex: "#181818"))
-                  .lineLimit(nil)
+//                  .lineLimit(nil)
           }
           
-          Spacer()
+//          Spacer()
           
           CustomText(fontText: self.job.salary ?? "", fontSize: 20)
           
-          Spacer()
+//          Spacer()
           
           NavigationLink(destination: DetailsView(jobObj: self.job)
             .navigationBarHidden(true)
@@ -105,12 +106,18 @@ struct MainCardView: View {
       .zIndex(isTopCard ? 1 : 0)
   }
 }
+*/
 
+/*
 struct Basic: View {
     
-    @State private var data: [Job] = Job.mockData
+//    @State private var data: [Job] = Job.mockData
+    @State private var jobs: [Job] = Job.mockData
+    @State var isExpanded = false
+    let cellHeight = 200
 
   var body: some View {
+      /*
     CardStack(
         direction: UpDown.direction,
       data: data,
@@ -134,9 +141,31 @@ struct Basic: View {
     .padding()
     .frame(alignment: .center)
 //    .navigationBarTitle("Basic", displayMode: .inline)
+       */
+      VStack {
+          LazyVStack(spacing: isExpanded ? 20 :  -Double(cellHeight)) {
+              ForEach($jobs) { $job in
+                  ListCardView(job: job, isTopCard: false)
+//                  MainCardView(job: tempJob, isTopCard: true)
+              }
+          }
+          .padding(.vertical)
+          Spacer()
+      }
+      .frame(maxWidth: .infinity, alignment: .top)
   }
 }
-
+struct ListCardView: View {
+    var job: Job
+    var isTopCard: Bool
+//    @AppStorage("cardview") var isCardView: Bool = true
+    
+  var body: some View {
+      var tempJob = self.job
+      
+  }
+}
+ 
 /*
 struct AddingCards: View {
     @State var data: [Job] = Array(Job.mockData.prefix(2))
@@ -223,6 +252,8 @@ struct CustomConfiguration: View {
   }
 }
 */
+
+
 struct JobCardsView: View {
     var body: some View {
         Basic()
@@ -245,6 +276,157 @@ struct JobCardsView: View {
     }
 }
 
+*/
+
+struct JobCardView: View {
+    var job: Job
+    var body: some View {
+        var tempJob = self.job
+        VStack(alignment: .leading) {
+//            HStack {
+//                job.logo
+//                    .resizable()
+//                    .frame(width: 40, height: 40)
+//                VStack(alignment: .leading) {
+//                    Text(job.companyName).font(.headline)
+//                    Text(job.designation).font(.subheadline)
+//                }
+//                Spacer()
+//            }
+            
+//            Text(tempJob.salary ?? "")
+//                .font(.subheadline)
+//                .foregroundColor(.gray)
+            
+            HStack {
+                tempJob.logo
+                    .resizable()
+                    .clipShape(Circle())
+//                  .border(.black, width: 1)
+                    .aspectRatio(1, contentMode: .fit)
+                
+                Spacer()
+                
+                Button(action: {
+                    tempJob.isBookmark.toggle()
+                }) {
+                    HStack {
+                        Image(systemName: tempJob.isBookmark ? "bookmark.fill" : "bookmark")
+                            .imageScale(.large)
+                            .foregroundColor(tempJob.isBookmark ? .black : .gray)
+                    } //: HStack
+                    .padding()
+                } //: Button
+                .buttonStyle(.borderedProminent)
+                .buttonBorderShape(.circle)
+                .controlSize(.small)
+                .tint(.black.opacity(0.08))
+            } //: HStack
+            .frame(height: 65)
+            
+            VStack(alignment: .leading) {
+                CustomText(fontText: self.job.companyName, fontSize: 26)
+//                    .frame(alignment: .topLeading)
+                
+                CustomText(fontText: self.job.designation, fontSize: 26)
+                    .textCase(.uppercase)
+                    .bold()
+            }
+            .padding(.vertical)
+            
+            CustomText(fontText: self.job.salary ?? "", fontSize: 20)
+                .foregroundColor(.gray)
+
+            Spacer()
+            
+            NavigationLink(destination: DetailsView(jobObj: self.job)
+              .navigationBarHidden(true)
+            ) {
+                CustomText(fontText: "See Details", fontSize: 20)
+                    .fontWeight(.bold)
+                    .foregroundColor(.white)
+                    .padding()
+                
+            } //: NavigationLink
+            .frame(maxWidth: .infinity)
+//            .background(.black)//(isTopCard ? .black : .white.opacity(0.7))
+            .background(Color(hex: "#2B304E"))
+            .clipShape(.capsule)
+            
+        }
+        .padding()
+        .background(Color(.systemGray6))
+        .cornerRadius(12)
+        .shadow(radius: 4)
+        
+    }
+}
+
+
+struct CardStackItem: View {
+    let job: Job
+    let index: Int
+    let total: Int
+    let onRemove: () -> Void
+    
+    @State private var offset = CGSize.zero
+    
+    var body: some View {
+        JobCardView(job: job)
+            .offset(y: CGFloat(index) * 15)
+            .scaleEffect(1 - CGFloat(index) * 0.03)
+            .zIndex(Double(total - index))
+            .offset(offset)
+            .gesture(
+                index == 0 ?
+                DragGesture()
+                    .onChanged { gesture in
+                        offset = gesture.translation
+                    }
+                    .onEnded { gesture in
+                        if gesture.translation.height < -100 {
+                            onRemove()
+                        } else {
+                            withAnimation {
+                                offset = .zero
+                            }
+                        }
+                    } : nil
+            )
+            .animation(.spring(), value: offset)
+            
+    }
+}
+
+struct StackedCardView: View {
+    @State private var jobs: [Job] = Job.mockData
+    
+    var body: some View {
+        ZStack {
+            ForEach(jobs, id: \.id) { job in
+                CardStackItem(job: job, index: jobs.firstIndex(where: { $0.id == job.id }) ?? 0, total: jobs.count) {
+                    withAnimation {
+                        if let index = jobs.firstIndex(where: { $0.id == job.id }) {
+                            jobs.remove(at: index)
+                        }
+                    }
+                }
+            }
+            .onDelete(perform: delete)
+        }
+        .padding(.horizontal)
+    }
+    
+    func delete(at offsets: IndexSet) {
+        withAnimation {
+            jobs.remove(atOffsets: offsets)
+        }
+    }
+    
+}
+
+
 #Preview {
-    JobCardsView()
+//    JobCardsView()
+    StackedCardView()
 }

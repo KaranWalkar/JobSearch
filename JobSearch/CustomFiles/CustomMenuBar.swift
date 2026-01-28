@@ -7,108 +7,100 @@
 
 import SwiftUI
 
-struct CustomMenuBar: View {
+// MARK: - Tab Enum
+enum Tab: CaseIterable {
+    case home, search, saved, profile
     
-    @State private var selectedTab: String = "Home"
-    
-    var body: some View {
-        
-        HStack {
-            // Home Button
-            Button(action: {
-                selectedTab = "Home"
-            }) {
-                HStack {
-                    Image(systemName: selectedTab == "Home" ? "house.fill" : "house")
-                        .font(.system(size: 24))
-                        .foregroundColor(selectedTab == "Home" ? .white : .gray)
-                    
-//                            if selectedTab == "Home" {
-//                                Text("Home")
-//                                    .font(.system(size: 18))
-//                                    .foregroundColor(selectedTab == "Home" ? .white : .gray)
-//                            }
-                }
-                .padding()
-            }
-            .buttonStyle(.borderedProminent)
-            .buttonBorderShape(.capsule)
-            .controlSize(.small)
-            .tint(selectedTab == "Home" ? .gray.opacity(0.1) : .clear)
-            
-            Spacer()
-            
-            // Search Button
-            Button(action: {
-                selectedTab = "Search"
-            }) {
-                HStack {
-                    Image(systemName: "magnifyingglass")
-                        .font(.system(size: 24))
-                        .foregroundColor(selectedTab == "Search" ? .white : .gray)
-                    
-//                            if selectedTab == "Search" {
-//                                Text("Search")
-//                                    .font(.system(size: 18))
-//                                    .foregroundColor(selectedTab == "Search" ? .white : .gray)
-//                            }
-                }
-                .padding()
-            }
-            .buttonStyle(.borderedProminent)
-            .buttonBorderShape(.capsule)
-            .controlSize(.small)
-            .tint(selectedTab == "Search" ? .gray.opacity(0.1) : .clear)
-            
-            Spacer()
-            
-            // Bookmark Button
-            Button(action: {
-                selectedTab = "Bookmark"
-            }) {
-                HStack {
-                    Image(systemName: selectedTab == "Bookmark" ? "bookmark.fill" : "bookmark")
-                        .font(.system(size: 24))
-                        .foregroundColor(selectedTab == "Bookmark" ? .white : .gray)
-                    
-//                            if selectedTab == "Bookmark" {
-//                                Text("Bookmark")
-//                                    .font(.system(size: 18))
-//                                    .foregroundColor(selectedTab == "Bookmark" ? .white : .gray)
-//                            }
-                }
-                .padding()
-            }
-            .buttonStyle(.borderedProminent)
-            .buttonBorderShape(.capsule)
-            .controlSize(.small)
-            .tint(selectedTab == "Bookmark" ? .gray.opacity(0.1) : .clear)
-            
-            Spacer()
-            
-            // Profile Button
-            Button(action: {
-                selectedTab = "Profile"
-            }) {
-                HStack {
-                    Image(systemName: selectedTab == "Profile" ? "person.fill" : "person")
-                        .font(.system(size: 24))
-                        .foregroundColor(selectedTab == "Profile" ? .white : .gray)
-                    
-//                            if selectedTab == "Profile" {
-//                                Text("Profile")
-//                                    .font(.system(size: 18))
-//                                    .foregroundColor(selectedTab == "Profile" ? .white : .gray)
-//                            }
-                }
-                .padding()
-            }
-            .buttonStyle(.borderedProminent)
-            .buttonBorderShape(.capsule)
-            .controlSize(.small)
-            .tint(selectedTab == "Profile" ? .gray.opacity(0.1) : .clear)
+    var title: String {
+        switch self {
+        case .home: return "Home"
+        case .search: return "Search"
+        case .saved: return "Saved"
+        case .profile: return "Profile"
         }
     }
+    
+    var iconName: String {
+        switch self {
+        case .home: return "house.fill"
+        case .search: return "magnifyingglass"
+        case .saved: return "bookmark.fill"
+        case .profile: return "person.fill"
+        }
+    }
+}
+
+
+struct CustomMenuBar: View {
+    
+    @State private var selectedTab: Tab = .home
+    // Keep a local editable resume to pass as a Binding to ProfileView
+    @State private var resume = Resume(
+        name: "John Doe",
+        email: "johndoe@example.com",
+        phone: "+1234567890",
+        sections: [],
+        rawText: ""
+    )
+
+    var body: some View {
+            VStack(spacing: 0) {
+                // Content area
+                ZStack {
+                    switch selectedTab {
+                    case .home:
+                        HomeView()
+                    case .search:
+                        //                        SearchView()
+                        EmptyView()
+                    case .saved:
+                        EmptyView()
+                    case .profile:
+                        //                        EmptyView()
+                        //                        ProfileView(resume: .constant(Resume(name: "John Doe", email: "johndoe@example.com", phone: "+1234567890", education: ["B.Sc. in Computer Science"], experience: ["Software Developer at XYZ Corp"], skills: ["Swift", "iOS", "Objective-C"])))
+                        ProfileView(resume: $resume)
+                    }
+                }
+                // Bottom Menu Bar
+                HStack {
+                    ForEach(Tab.allCases, id: \.self) { tab in
+                        Spacer()
+                        Button(action: {
+                            selectedTab = tab
+                        }) {
+                            //                            VStack {
+                            //                                Image(systemName: tab.iconName)
+                            //                                    .font(.system(size: 20, weight: .bold))
+                            //                                    .foregroundColor(selectedTab == tab ? .blue : .gray)
+                            //                                Text(tab.title)
+                            //                                    .font(.caption)
+                            //                                    .foregroundColor(selectedTab == tab ? .blue : .gray)
+                            //                            }
+                            HStack {
+                                Image(systemName: tab.iconName)
+                                    .font(.system(size: 24))
+                                    .foregroundColor(selectedTab == tab ? .white : .gray)
+                                
+                                //                            if selectedTab == "Search" {
+                                //                                Text("Search")
+                                //                                    .font(.system(size: 18))
+                                //                                    .foregroundColor(selectedTab == "Search" ? .white : .gray)
+                                //                            }
+                            }
+                            .padding()
+                        }
+                        .buttonStyle(.borderedProminent)
+                        .buttonBorderShape(.capsule)
+                        .controlSize(.small)
+                        .tint(selectedTab == tab ? .gray.opacity(0.1) : .clear)
+                        Spacer()
+                    }
+                }
+                .padding()
+                //                .background(Color.white.shadow(radius: 2))
+            }
+            .edgesIgnoringSafeArea(.bottom)
+        }
 }
 
 #Preview {

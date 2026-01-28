@@ -11,7 +11,7 @@ struct DetailsView: View {
     
     @State var jobObj : Job
     
-    @State private var isShowingSheet: Bool = true
+//    @State private var isShowingSheet: Bool = true
     @Environment(\.dismiss) private var dismiss
     
     var body: some View {
@@ -20,40 +20,42 @@ struct DetailsView: View {
             
             VStack {
                 // Navigation Bar
-                HStack {
-                    Button(action: {
-                        // Handle back action
-                        self.dismiss()
-                    }) {
-                        Image(systemName: "arrow.left")
-                            .font(.title2)
-                            .foregroundColor(.white)
-                    }
-                    .padding()
-                    .tint(.white)
-                    .background(.white.opacity(0.07))
-                    .clipShape(.circle)
-                    
-                    Spacer()
-                    
-                    CustomText(fontText: "Job Details", fontSize: 20)
-                        .foregroundColor(.white)
-                    
-                    Spacer()
-                    
-                    Button(action: {
-                        // Handle menu action
-                    }) {
-                        Image(systemName: "ellipsis")
-                            .font(.title2)
-                            .foregroundColor(.white)
-                    }
-                    .padding()
-                    .tint(.white)
-                    .background(.white.opacity(0.07))
-                    .clipShape(.circle)
-                }
-                .padding()
+//                HStack {
+//                    Button(action: {
+//                        // Handle back action
+//                        self.dismiss()
+//                    }) {
+//                        Image(systemName: "arrow.left")
+//                            .font(.title2)
+//                            .foregroundColor(.white)
+//                    }
+//                    .padding()
+//                    .tint(.white)
+//                    .background(.white.opacity(0.07))
+//                    .clipShape(.circle)
+//                    
+//                    Spacer()
+//                    
+//                    CustomText(fontText: "Job Details", fontSize: 20)
+//                        .foregroundColor(.white)
+//                    
+//                    Spacer()
+//                    
+//                    Button(action: {
+//                        // Handle menu action
+//                    }) {
+//                        Image(systemName: "ellipsis")
+//                            .font(.title2)
+//                            .foregroundColor(.white)
+//                    }
+//                    .padding()
+//                    .tint(.white)
+//                    .background(.white.opacity(0.07))
+//                    .clipShape(.circle)
+//                }
+//                .padding()
+                
+                CustomNavigationBar(titleText: "Job Details", buttonImage: "ellipsis")
                 
                 let jobDesignation = self.jobObj.designation + "\nat " + self.jobObj.companyName // "Market Consultant at Google"
                 // Job Title
@@ -85,13 +87,10 @@ struct DetailsView: View {
                     VStack(alignment: .leading, spacing: 20) {
                         CustomText(fontText: "Preferred Qualifications:", fontSize: 20)
                             .fontWeight(.semibold)
-//                            .foregroundColor(.black)
-                    
-//                        Spacer()
                         
                         HStack {
                             if let value = self.jobObj.requirement {
-                                QualificationCard(icon: "lightbulb.max", text: value != "" ? value : "Broad range of HR knowledge.")
+                                QualificationCard(icon: "lightbulb.max", text: value != "" ? value : "Broad range of app knowledge.")
                             }
                             if let value = self.jobObj.skill {
                                 QualificationCard(icon: "eyeglasses", text: value != "" ? value : "Excellent presentation skills.")
@@ -100,11 +99,11 @@ struct DetailsView: View {
                         .shadow(radius: 5)
                         
                         if let value = self.jobObj.qualification {
-                            QualificationCard(icon: "folder.badge.gearshape", text: value != "" ? value : "Experience implementing large-scale HR projects, risk management/mitigation and supporting change management.")
+                            QualificationCard(icon: "folder.badge.gearshape", text: value != "" ? value : "Experience implementing large-scale iOS projects, risk management/mitigation and supporting change management.")
                                 .shadow(radius: 5)
                         }
                     }
-//                    .padding(.bottom, 10)
+                    .padding([.leading, .trailing], 20)
                    
                     Spacer()
                    
@@ -118,15 +117,13 @@ struct DetailsView: View {
                             .bold()
                             .frame(maxWidth: .infinity)
                             .padding()
-                            .background(Color.black)
+                            .background(Color(hex: "#2B304E"))
                             .foregroundColor(.white)
                             .cornerRadius(15)
                     }
                     .clipShape(.capsule)
                     .padding([.top, .horizontal])
                 }
-                .frame(maxHeight: .infinity)
-//                .padding(.vertical)
                 .background(.white)
                 .mask(RoundedRectangle(cornerRadius: 20, style: .continuous).padding(.bottom, -30))
                 
@@ -183,8 +180,9 @@ struct QualificationCard: View {
             
             CustomText(fontText: text, fontSize: 18)
                 .foregroundColor(.black)
-                .padding(.leading, 5)
+//                .padding(.leading, 5)
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
         .padding()
         .background(Color.white)
         .cornerRadius(10)

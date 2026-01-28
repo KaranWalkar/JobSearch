@@ -28,31 +28,24 @@ extension Color {
 struct HomeView: View {
     
     var profilePicture: Image? = nil
+    @AppStorage("cardview") var isCardView: Bool = true
     
     var body: some View {
         
         ZStack {
-            CustomBackground()
+//            CustomBackground()
             
-            VStack(spacing: 10) {
+            VStack() {
                 // Header
                 HStack {
-                    Button(action: {
-                        //Change Profile Image
-                    }) {
-//                        self.profilePicture ?? Image(systemName: "person")
-                        Image("profilePic") 
-                            .resizable()
-                            .clipShape(Circle())
-                            .scaledToFit()
-                            .font(.system(size: 14))
-                            .foregroundColor(.white)
-                    }
-                    .frame(width: 90)
-                    .buttonStyle(.borderedProminent)
-                    .buttonBorderShape(.circle)
-                    .controlSize(.small)
-                    .tint(.white.opacity(0.1))
+                    Image("profilePic")
+                        .resizable()
+                        .clipShape(.circle)
+                        .padding(5)
+                        .scaledToFit()
+                        .font(.system(size: 14))
+                        .background(.white.opacity(0.07))
+                        .clipShape(.circle)
                     
                     VStack(alignment: .leading) {
                         CustomText(fontText: "Welcome", fontSize: 18)
@@ -63,73 +56,43 @@ struct HomeView: View {
                     .foregroundStyle(.white)
                     
                     Spacer()
-
+                    
+                    NavigationLink(destination:
+                        NotificationStackView()
+                            .modifier(HideNavBarOnIOS())
+                    ) {
+                        Image(systemName: "bell")
+                            .font(.system(size: 30))
+                            .foregroundColor(.white)
+                            .padding()
+                        
+                    } //: NavigationLink
+                    .background(.white.opacity(0.07))
+                    .clipShape(.circle)
+                    
+                } //: Header
+                .frame(height: 80)
+                
+                HStack {
+                    InfoCard(title: "Profile Viewed", value: "20", icon: "")
+                    InfoCard(title: "Contacted You", value: "10", icon: "")
+                    InfoCard(title: "Profile Bookmark", value: "0", icon: "")
+                }
+                .padding(10)
+                
+                HStack {
                     Button(action: {
-                        //Change Profile Image
                     }) {
                         HStack {
-                            Image(systemName: "bell")
-                                .font(.system(size: 24))
-                                .foregroundColor(.white)
-                        }
-                        .padding()
-                    }
-                    .buttonStyle(.borderedProminent)
-                    .buttonBorderShape(.circle)
-                    .controlSize(.small)
-                    .tint(.white.opacity(0.07))
+                            CustomText(fontText: "My Jobs", fontSize: 18)
+                                .lineLimit(1)
+                        } //: HStack
+                    } //: Button
+                    .padding()
+                    .tint(.white)
+                    .background(.white.opacity(0.07))
+                    .clipShape(.capsule)
                     
-                }
-                //: Header
-                
-                VStack {
-//                    HStack {
-//                        CustomText(fontText: "Your Profile Performance", fontSize: 18)
-//                            .foregroundColor(.white)
-//                        CustomText(fontText: "(in last 30 days)", fontSize: 12)
-//                            .foregroundColor(.gray)
-//                    }
-                    HStack {
-                        InfoCard(title: "Profile Viewed", value: "10", icon: "")
-                        InfoCard(title: "Contacted You", value: "20", icon: "")
-                        InfoCard(title: "Profile Bookmark", value: "0", icon: "")
-                    }
-//                    .padding(20)
-                }
-                HStack {
-                    
-                    
-//                    Button(action: {
-//                    }) {
-//                        HStack {
-////                            Image(systemName: "slider.horizontal.3")
-////                                .font(.system(size: 24))
-//
-
-//                        } //: HStack
-//                    } //: Button
-//                    .padding()
-//                    .tint(.white)
-//                    .background(.white.opacity(0.07))
-//                    .clipShape(.capsule)
-                    
-//                    Button(action: {
-//                    }) {
-//                        HStack {
-////                            Image(systemName: "slider.horizontal.3")
-////                                .font(.system(size: 24))
-//                            
-//                            CustomText(fontText: "Applied Jobs", fontSize: 14)
-//                                .lineLimit(1)
-////                                .fixedSize()
-//                        } //: HStack
-//                    } //: Button
-//                    .padding()
-//                    .tint(.white)
-//                    .background(.white.opacity(0.07))
-//                    .clipShape(.capsule)
-                    
-//                    Spacer()
                     Button(action: {
                     }) {
                         HStack {
@@ -146,6 +109,9 @@ struct HomeView: View {
                     
                     Spacer()
                     Button(action: {
+                        withAnimation {
+                            isCardView.toggle()
+                        }
                     }) {
                         HStack {
                             Image(systemName: "list.bullet") //square.stack.3d.up
@@ -157,22 +123,38 @@ struct HomeView: View {
                     .background(.white.opacity(0.07))
                     .clipShape(.circle)
                 } //: HStack
+                .padding(10)
                 
-                CustomText(fontText: "Jobs for you", fontSize: 18)
-                    .foregroundColor(.white)
-                JobCardsView()
-                
-                Spacer()
-                
-                // Custom Bottom Menu Bar
-                CustomMenuBar()
+                if isCardView {
+                    StackedCardView()
+                        .frame(maxHeight: .infinity)
+                        .padding(.vertical)
+                } else {
+                    ListView()
+                }
             }
             .padding(15)
-//            .frame(maxHeight: .infinity, alignment: .bottom)
-
+            .frame(maxHeight: .infinity, alignment: .top)
         }
         
-        
+    }
+}
+
+// A helper view modifier to hide the navigation bar on iOS only.
+// On iOS 16+, prefer the toolbar-based API; this keeps broad compatibility.
+private struct HideNavBarOnIOS: ViewModifier {
+    func body(content: Content) -> some View {
+        #if os(iOS)
+        if #available(iOS 16.0, *) {
+            content
+                .toolbar(.hidden, for: .navigationBar)
+        } else {
+            content
+                .navigationBarHidden(true)
+        }
+        #else
+        content
+        #endif
     }
 }
 
@@ -180,3 +162,4 @@ struct HomeView: View {
     HomeView()
 //    CustomBackground()
 }
+

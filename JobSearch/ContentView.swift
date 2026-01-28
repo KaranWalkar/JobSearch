@@ -13,14 +13,16 @@ struct ContentView: View {
     @Query private var items: [Item]
 
     var body: some View {
-//        if let image = UIImage(named: "back-button") {
-//            UINavigationBar.appearance().backIndicatorImage = image
-//            UINavigationBar.appearance().backIndicatorTransitionMaskImage = image
-//        }
         NavigationView {
-            HomeView()
+            ZStack {
+                CustomBackground()
+                VStack {
+                    // Custom Bottom Menu Bar
+                    CustomMenuBar()
+                }
+            }
         }
-//        .navigationViewStyle(.stack)
+        
     }
 
     private func addItem() {
@@ -28,7 +30,7 @@ struct ContentView: View {
             let newItem = Item(timestamp: Date())
             modelContext.insert(newItem)
         }
-    } 
+    } 
 
     private func deleteItems(offsets: IndexSet) {
         withAnimation {
