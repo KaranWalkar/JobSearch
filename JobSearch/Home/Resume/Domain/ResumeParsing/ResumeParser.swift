@@ -7,95 +7,176 @@
 
 import Foundation
 
-struct IntelligentResumeParser {
-    static func parse(text: String) -> Resume {
-        let resume = Resume()
-        resume.rawText = text
-        resume.name = extractName(from: text)
-        resume.email = extract(pattern: "[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,}", from: text)
-        resume.phone = extract(pattern: "(\\+?\\d{1,3}[\\s-]?)?(\\(?\\d{3}\\)?[\\s-]?)?\\d{3}[\\s-]?\\d{4}", from: text)
-        resume.sections = extractSections(from: text)
-        return resume
+final class ResumeParser {
+
+    func parse(text: String) -> ParsedResume {
+
+        let email = extractEmail(from: text)
+        let phone = extractPhone(from: text)
+        let skills = extractSkills(from: text)
+
+        return ParsedResume(
+            name: extractName(from: text),
+            designation: extractDesignation(from: text),
+            email: email,
+            phone: phone,
+            skills: skills,
+            about: text,
+            linkedin: extractLinkedIn(from: text),
+            github: extractGitHub(from: text)
+        )
     }
 
-    private static func extractSections(from text: String) -> [ResumeSection] {
+    private func extractEmail(from text: String) -> String? {
+        let regex = try! NSRegularExpression(
+            pattern: "[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,}",
+            options: .caseInsensitive
+        )
+        return regex.firstMatch(in: text, range: NSRange(text.startIndex..., in: text))
+            .map { String(text[Range($0.range, in: text)!]) }
+    }
 
-        let lines = text
-            .components(separatedBy: .newlines)
-            .map { $0.trimmingCharacters(in: .whitespaces) }
-            .filter { !$0.isEmpty }
+    private func extractPhone(from text: String) -> String? {
+        let regex = try! NSRegularExpression(pattern: "\\+?[0-9]{10,13}")
+        return regex.firstMatch(in: text, range: NSRange(text.startIndex..., in: text))
+            .map { String(text[Range($0.range, in: text)!]) }
+    }
 
-        var sections: [ResumeSection] = []
-        var currentTitle: String?
-        var buffer: [String] = []
+    private func extractSkills(from text: String) -> [String] {
+        let knownSkills = ["Swift", "SwiftUI", "UX", "UI", "Figma", "iOS"]
+        return knownSkills.filter { text.localizedCaseInsensitiveContains($0) }
+    }
 
-        for line in lines {
-            if isHeader(line) {
-                if let title = currentTitle {
-                    let sub = ResumeSubSection(content: buffer.joined(separator: "\n"))
-                    sections.append(
-                        ResumeSection(title: title, subSections: [sub])
-                    )
-                }
-                currentTitle = normalize(line)
-                buffer = []
-            } else {
-                buffer.append(line)
-            }
-        }
+    private func extractName(from text: String) -> String {
+        text.components(separatedBy: "\n").first ?? "Unknown"
+    }
 
-        if let title = currentTitle {
-            let sub = ResumeSubSection(content: buffer.joined(separator: "\n"))
-            sections.append(
-                ResumeSection(title: title, subSections: [sub])
-            )
-        }
-
-        return sections
+    private func extractDesignation(from text: String) -> String? {
+        nil
     }
     
+    
+    private func extractLinkedIn(from text: String) -> String? {
+        match(
+            pattern: "https?://(www\\.)?linkedin\\.com/[^\\s]+",
+            in: text
+        )
+    }
+
+    private func extractGitHub(from text: String) -> String? {
+        match(
+            pattern: "https?://(www\\.)?github\\.com/[^\\s]+",
+            in: text
+        )
+    }
+
+    private func match(pattern: String, in text: String) -> String? {
+        let regex = try? NSRegularExpression(
+            pattern: pattern,
+            options: [.caseInsensitive]
+        )
+
+        let range = NSRange(text.startIndex..., in: text)
+        let match = regex?.firstMatch(in: text, range: range)
+
+        if let match, let range = Range(match.range, in: text) {
+            return String(text[range])
+        }
+        return nil
+    }
+    
+}
+
+
+//struct IntelligentResumeParser {
+//    static func parse(text: String) -> Resume {
+//        let resume = Resume()
+//        resume.rawText = text
+//        resume.name = extractName(from: text)
+//        resume.email = extract(pattern: "[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,}", from: text)
+//        resume.phone = extract(pattern: "(\\+?\\d{1,3}[\\s-]?)?(\\(?\\d{3}\\)?[\\s-]?)?\\d{3}[\\s-]?\\d{4}", from: text)
+//        resume.sections = extractSections(from: text)
+//        return resume
+//    }
+//
+//    private static func extractSections(from text: String) -> [ResumeSection] {
+//
+//        let lines = text
+//            .components(separatedBy: .newlines)
+//            .map { $0.trimmingCharacters(in: .whitespaces) }
+//            .filter { !$0.isEmpty }
+//
+//        var sections: [ResumeSection] = []
+//        var currentTitle: String?
+//        var buffer: [String] = []
+//
+//        for line in lines {
+//            if isHeader(line) {
+//                if let title = currentTitle {
+//                    let sub = ResumeSubSection(content: buffer.joined(separator: "\n"))
+//                    sections.append(
+//                        ResumeSection(title: title, subSections: [sub])
+//                    )
+//                }
+//                currentTitle = normalize(line)
+//                buffer = []
+//            } else {
+//                buffer.append(line)
+//            }
+//        }
+//
+//        if let title = currentTitle {
+//            let sub = ResumeSubSection(content: buffer.joined(separator: "\n"))
+//            sections.append(
+//                ResumeSection(title: title, subSections: [sub])
+//            )
+//        }
+//
+//        return sections
+//    }
+//    
+////    private static func normalize(_ header: String) -> String {
+////        header
+////            .replacingOccurrences(of: ":", with: "")
+////            .trimmingCharacters(in: .whitespacesAndNewlines)
+////    }
+////
+////    private static func isHeader(_ line: String) -> Bool {
+////        line.count < 40 && (line.uppercased() == line || line.hasSuffix(":"))
+////    }
+//    
+//    private static func isHeader(_ line: String) -> Bool {
+//        guard line.count < 40 else { return false }
+//
+//        let uppercaseRatio =
+//            Double(line.filter { $0.isUppercase }.count) /
+//            Double(max(line.count, 1))
+//
+//        let isAllCaps = uppercaseRatio > 0.6
+//        let endsWithColon = line.hasSuffix(":")
+//
+//        return isAllCaps || endsWithColon
+//    }
+//
 //    private static func normalize(_ header: String) -> String {
 //        header
 //            .replacingOccurrences(of: ":", with: "")
 //            .trimmingCharacters(in: .whitespacesAndNewlines)
 //    }
 //
-//    private static func isHeader(_ line: String) -> Bool {
-//        line.count < 40 && (line.uppercased() == line || line.hasSuffix(":"))
+//
+//    private static func extractName(from text: String) -> String {
+//        text.components(separatedBy: .newlines).prefix(5).first ?? ""
 //    }
-    
-    private static func isHeader(_ line: String) -> Bool {
-        guard line.count < 40 else { return false }
-
-        let uppercaseRatio =
-            Double(line.filter { $0.isUppercase }.count) /
-            Double(max(line.count, 1))
-
-        let isAllCaps = uppercaseRatio > 0.6
-        let endsWithColon = line.hasSuffix(":")
-
-        return isAllCaps || endsWithColon
-    }
-
-    private static func normalize(_ header: String) -> String {
-        header
-            .replacingOccurrences(of: ":", with: "")
-            .trimmingCharacters(in: .whitespacesAndNewlines)
-    }
-
-
-    private static func extractName(from text: String) -> String {
-        text.components(separatedBy: .newlines).prefix(5).first ?? ""
-    }
-
-    private static func extract(pattern: String, from text: String) -> String {
-        let regex = try? NSRegularExpression(pattern: pattern, options: .caseInsensitive)
-        let range = NSRange(text.startIndex..., in: text)
-        guard let match = regex?.firstMatch(in: text, range: range),
-              let r = Range(match.range, in: text) else { return "" }
-        return String(text[r])
-    }
-}
+//
+//    private static func extract(pattern: String, from text: String) -> String {
+//        let regex = try? NSRegularExpression(pattern: pattern, options: .caseInsensitive)
+//        let range = NSRange(text.startIndex..., in: text)
+//        guard let match = regex?.firstMatch(in: text, range: range),
+//              let r = Range(match.range, in: text) else { return "" }
+//        return String(text[r])
+//    }
+//}
 
 
 /*

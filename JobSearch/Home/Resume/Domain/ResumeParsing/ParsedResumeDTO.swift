@@ -7,6 +7,18 @@
 
 import Foundation
 
+struct ParsedResume {
+    let name: String
+    let designation: String?
+    let email: String?
+    let phone: String?
+    let skills: [String]
+    let about: String
+    let linkedin: String?
+    let github: String?
+}
+
+/*
 struct ParsedResumeDTO: Codable {
     let name: String?
     let email: String?
@@ -19,3 +31,4 @@ struct ParsedExperienceDTO: Codable {
     let role: String
     let details: String?
 }
+*/

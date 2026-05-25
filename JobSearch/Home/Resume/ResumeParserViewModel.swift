@@ -4,7 +4,7 @@
 //
 //  Created by Walkar, Karan on 24/07/25.
 //
-
+/*
 import Foundation
 import UniformTypeIdentifiers
 import SwiftUI
@@ -72,3 +72,4 @@ final class ResumeParserViewModel: ObservableObject {
 //    }
 //}
 
+*/

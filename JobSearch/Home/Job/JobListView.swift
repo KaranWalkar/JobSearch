@@ -48,9 +48,9 @@ import SwiftUI
 //        .shadow(radius: 1)
 //    }
 //}
-
+/*
 struct JobListView : View {
-    var job: Job
+    var job: JobUIModel
     var body: some View {
         var tempJob = self.job
         VStack(alignment: .leading) {
@@ -83,37 +83,10 @@ struct JobListView : View {
 
 
 struct ListStackItem: View {
-    let job: Job
-//    let index: Int
-//    let total: Int
-//    let onRemove: () -> Void
-//    
-//    @State private var offset = CGSize.zero
+    let job: JobUIModel
     
     var body: some View {
         JobListView(job: job)
-//            .offset(y: CGFloat(index) * 15)
-//            .scaleEffect(1 - CGFloat(index) * 0.03)
-//            .zIndex(Double(total - index))
-//            .offset(offset)
-//            .gesture(
-//                index == 0 ?
-//                DragGesture()
-//                    .onChanged { gesture in
-//                        offset = gesture.translation
-//                    }
-//                    .onEnded { gesture in
-//                        if gesture.translation.height < -100 {
-//                            onRemove()
-//                        } else {
-//                            withAnimation {
-//                                offset = .zero
-//                            }
-//                        }
-//                    } : nil
-//            )
-//            .animation(.spring(), value: offset)
-            
     }
 }
 
@@ -124,20 +97,11 @@ struct ListView: View {
         ScrollView {
             VStack {
                 ForEach(jobs, id: \.id) { job in
-                    //                ListStackItem(job: job, index: jobs.firstIndex(where: { $0.id == job.id }) ?? 0, total: jobs.count) {
-                    //                    withAnimation {
-                    //                        if let index = jobs.firstIndex(where: { $0.id == job.id }) {
-                    //                            jobs.remove(at: index)
-                    //                        }
-                    //                    }
-                    //                }
                     ListStackItem(job: job)
                 }
                 //            .onDelete(perform: delete)
             }
-            //        .frame(maxWidth: .infinity)
             .padding(.horizontal)
-            //        .scrollDisabled(true)
         }
     }
     
@@ -148,73 +112,8 @@ struct ListView: View {
 //    }
     
 }
-
-/*
-struct JobListView: View {
-//    @State private var jobs = sampleJobs
-    @State private var jobs: [Job] = Job.mockData
-
-    var body: some View {
-        List() {
-            ForEach($jobs) { $job in
-//                JobCardView(job: job)
-//                JobCardView(job: $job, isExpanded: true)
-//                JobRowView(job: $job)
-//                    .listRowInsets(EdgeInsets()) // Remove default insets
-//                    .listRowSeparator(.visible) // Optional: hide row separators
-//                    .background(Color.clear) // Remove row background
-            }
-        }
-        .listStyle(PlainListStyle()) // Use plain style to flatten the list
-        .background(Color.clear) // Remove list background
-        .padding(8)
-    }
-}
-
-
-struct JobRowView: View {
-    @Binding var job: Job
-
-    var body: some View {
-        HStack {
-//            Image(systemName: job.logo)
-            job.logo
-                .resizable()
-                .frame(width: 40, height: 40)
-//                .padding(.trailing, 8)
-                .clipShape(Circle())
-                .aspectRatio(1, contentMode: .fit)
-
-            VStack(alignment: .leading) {
-                Text(job.designation)
-                    .font(.headline)
-                Text(job.companyName)
-                    .font(.subheadline)
-                Text(job.salary ?? "")
-                    .font(.subheadline)
-                    .foregroundColor(.gray)
-            }
-            Spacer()
-
-            Button(action: {
-                job.isBookmark.toggle()
-            }) {
-                Image(systemName: job.isBookmark ? "bookmark.fill" : "bookmark")
-                    .foregroundColor(job.isBookmark ? .black : .gray)
-            }
-
-//            NavigationLink(destination: DetailsView(jobObj: job)) {
-//                Image(systemName: "chevron.right")
-//                    .foregroundColor(.gray)
-//            }
-        }
-        .cornerRadius(10)
-        .padding(.vertical, 8)
-        
-    }
-}
-*/
-
+ 
 #Preview {
     ListView()
 }
+ */

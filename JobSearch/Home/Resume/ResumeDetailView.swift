@@ -4,7 +4,7 @@
 //
 //  Created by Walkar, Karan on 24/07/25.
 //
-
+/*
 import SwiftUI
 #if os(iOS)
 import UIKit
@@ -236,3 +236,5 @@ struct ResumeDetailView_Previews: PreviewProvider {
         }
     }
 }
+
+*/

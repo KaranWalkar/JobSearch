@@ -4,7 +4,7 @@
 //
 //  Created by Walkar, Karan on 24/07/25.
 //
-
+/*
 import SwiftUI
 import SwiftData
 
@@ -18,7 +18,7 @@ struct ResumeUploadView: View {
         )
     }
 }
-
+*/
 
 /*
 import SwiftUI
@@ -426,7 +426,7 @@ struct ResumeUploadView: View {
 }
 
 */
-
-#Preview {
-    ResumeUploadView()
-}
+//
+//#Preview {
+//    ResumeUploadView()
+//}

@@ -25,6 +25,103 @@ extension Color {
     }
 }
 
+
+struct HomeView: View {
+
+//    @StateObject var viewModel: HomeViewModel
+//    let navigationState: AppNavigationState
+    
+    @ObservedObject var viewModel: HomeViewModel
+    var navigationState: AppNavigationState
+
+    var body: some View {
+        VStack {
+            HeaderView(profileName: viewModel.profileName)
+            
+            HStack {
+                InfoCard(title: "Profile Viewed", value: "20", icon: "")
+                InfoCard(title: "Contacted You", value: "10", icon: "")
+                InfoCard(title: "Profile Bookmark", value: "0", icon: "")
+            }
+            .padding(10)
+            
+            
+            HStack {
+//                CustomText(fontText: "YOUR JOB MATCH", fontSize: 26)
+                Text("YOUR JOB MATCH")
+//                    .font(.title.bold())
+                    .font(Font.largeTitle.bold())
+                    .foregroundColor(.white)
+//                    .lineLimit(1)
+                
+                Spacer()
+                
+                Button(action: {
+                }) {
+                    HStack {
+                        Image(systemName: "slider.horizontal.3")
+                            .font(.system(size: 24))
+                        
+                        CustomText(fontText: "Filters", fontSize: 18)
+                    } //: HStack
+                } //: Button
+                .padding()
+                .tint(.white)
+                .background(.white.opacity(0.07))
+                .clipShape(.capsule)
+            }
+            .padding(.horizontal)
+            
+            jobStackView
+                .padding()
+            
+            Spacer()
+//            BottomNavBar()
+        }
+    }
+
+    private var jobStackView: some View {
+        ZStack {
+            ForEach(visibleJobIndices, id: \.self) { index in
+                jobCard(for: index)
+            }
+        }
+    }
+
+    private var visibleJobIndices: [Int] {
+        Array(viewModel.jobs.indices)
+            .filter { $0 >= viewModel.currentIndex }
+            .reversed()
+    }
+
+    @ViewBuilder
+    private func jobCard(for index: Int) -> some View {
+        SwipeableCardView(
+            job: viewModel.jobs[index],
+            onSwiped: viewModel.swipeNext
+        )
+        .onTapGesture {
+            navigationState.path.append(
+                AppRoute.jobDetail(jobId: viewModel.jobs[index].id)
+            )
+        }
+        .opacity(1.0 - Double(index) * 0.2)
+        .offset(y: yOffset(for: index))
+        .scaleEffect(scale(for: index))
+        .zIndex(Double(viewModel.jobs.count - index))
+    }
+
+    private func yOffset(for index: Int) -> CGFloat {
+        CGFloat(index - viewModel.currentIndex) * 18
+    }
+
+    private func scale(for index: Int) -> CGFloat {
+        1 - CGFloat(index - viewModel.currentIndex) * 0.03
+    }
+}
+
+/*
+
 struct HomeView: View {
     
     var profilePicture: Image? = nil
@@ -157,9 +254,17 @@ private struct HideNavBarOnIOS: ViewModifier {
         #endif
     }
 }
+*/
 
 #Preview {
-    HomeView()
-//    CustomBackground()
+    ZStack {
+        CustomBackground()
+        
+        HomeView(
+            viewModel: HomeViewModel(
+                fetchJobsUseCase: AppContainer.shared.fetchJobsUseCase, profileRepository: AppContainer.shared.profileRepository
+            ),
+            navigationState: AppNavigationState()
+        )
+    }
 }
-

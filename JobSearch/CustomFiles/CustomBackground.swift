@@ -9,10 +9,15 @@ import SwiftUI
 
 struct CustomBackground: View {
     var body: some View {
-        
-        ZStack {
-            LinearGradient(colors: [Color(hex: "#546694"), Color(hex: "#2B304E") ], startPoint: .top, endPoint: .bottom).ignoresSafeArea()
-        }
+        LinearGradient(
+            colors: [
+                Color(hex: "#546694"),
+                Color(hex: "#2B304E")
+            ],
+            startPoint: .top,
+            endPoint: .bottom
+        )
+        .ignoresSafeArea()
     }
 }
 

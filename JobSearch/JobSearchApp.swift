@@ -10,31 +10,47 @@ import SwiftData
 
 @main
 struct JobSearchApp: App {
-    var sharedModelContainer: ModelContainer = {
-        let schema = Schema([
-            Item.self,
-        ])
-        let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
 
-        do {
-            return try ModelContainer(for: schema, configurations: [modelConfiguration])
-        } catch {
-            fatalError("Could not create ModelContainer: \(error)")
-        }
-    }()
+    let container = AppContainer.shared
 
+    init() {
+        container.seedInitialDataIfNeeded()
+    }
+    
     var body: some Scene {
+        WindowGroup {
+            RootTabView()
+                .modelContainer(container.modelContainer)
+        }
+    }
+}
+//@main
+//struct JobSearchApp: App {
+//    var sharedModelContainer: ModelContainer = {
+//        let schema = Schema([
+//            Item.self,
+//        ])
+//        let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
+//
+//        do {
+//            return try ModelContainer(for: schema, configurations: [modelConfiguration])
+//        } catch {
+//            fatalError("Could not create ModelContainer: \(error)")
+//        }
+//    }()
+//
+//    var body: some Scene {
+////        WindowGroup {
+////            ContentView()
+////        }
+////        .modelContainer(sharedModelContainer)
 //        WindowGroup {
 //            ContentView()
 //        }
-//        .modelContainer(sharedModelContainer)
-        WindowGroup {
-            ContentView()
-        }
-        .modelContainer(for: [
-            Resume.self,
-            Skill.self,
-            Experience.self
-        ])
-    }
-}
+//        .modelContainer(for: [
+//            Resume.self,
+//            Skill.self,
+//            Experience.self
+//        ])
+//    }
+//}

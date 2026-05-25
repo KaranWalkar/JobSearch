@@ -9,7 +9,7 @@ import SwiftUI
 
 struct DetailsView: View {
     
-    @State var jobObj : Job
+    @State var jobObj : JobUIModel
     
 //    @State private var isShowingSheet: Bool = true
     @Environment(\.dismiss) private var dismiss
@@ -19,43 +19,7 @@ struct DetailsView: View {
             CustomBackground()
             
             VStack {
-                // Navigation Bar
-//                HStack {
-//                    Button(action: {
-//                        // Handle back action
-//                        self.dismiss()
-//                    }) {
-//                        Image(systemName: "arrow.left")
-//                            .font(.title2)
-//                            .foregroundColor(.white)
-//                    }
-//                    .padding()
-//                    .tint(.white)
-//                    .background(.white.opacity(0.07))
-//                    .clipShape(.circle)
-//                    
-//                    Spacer()
-//                    
-//                    CustomText(fontText: "Job Details", fontSize: 20)
-//                        .foregroundColor(.white)
-//                    
-//                    Spacer()
-//                    
-//                    Button(action: {
-//                        // Handle menu action
-//                    }) {
-//                        Image(systemName: "ellipsis")
-//                            .font(.title2)
-//                            .foregroundColor(.white)
-//                    }
-//                    .padding()
-//                    .tint(.white)
-//                    .background(.white.opacity(0.07))
-//                    .clipShape(.circle)
-//                }
-//                .padding()
-                
-                CustomNavigationBar(titleText: "Job Details", buttonImage: "ellipsis")
+//                CustomNavigationBar(titleText: "Job Details", buttonImage: "ellipsis")
                 
                 let jobDesignation = self.jobObj.designation + "\nat " + self.jobObj.companyName // "Market Consultant at Google"
                 // Job Title
@@ -82,23 +46,22 @@ struct DetailsView: View {
                         .foregroundColor(.black.opacity(0.1)) // Color of the underline
                         .cornerRadius(2)
                         .padding()
-//                        .frame(maxWidth: .infinity, alignment: .center) // Center the VStack
                     
                     VStack(alignment: .leading, spacing: 20) {
                         CustomText(fontText: "Preferred Qualifications:", fontSize: 20)
                             .fontWeight(.semibold)
                         
                         HStack {
-                            if let value = self.jobObj.requirement {
+                            if let value = self.jobObj.skill {
                                 QualificationCard(icon: "lightbulb.max", text: value != "" ? value : "Broad range of app knowledge.")
                             }
-                            if let value = self.jobObj.skill {
+                            if let value = self.jobObj.qualification {
                                 QualificationCard(icon: "eyeglasses", text: value != "" ? value : "Excellent presentation skills.")
                             }
                         }
                         .shadow(radius: 5)
                         
-                        if let value = self.jobObj.qualification {
+                        if let value = self.jobObj.requirement {
                             QualificationCard(icon: "folder.badge.gearshape", text: value != "" ? value : "Experience implementing large-scale iOS projects, risk management/mitigation and supporting change management.")
                                 .shadow(radius: 5)
                         }
@@ -113,11 +76,11 @@ struct DetailsView: View {
                         self.dismiss()
                         self.jobObj.isApplied = true
                     }) {
-                        CustomText(fontText: "Apply Now", fontSize: 18)
+                        CustomText(fontText: jobObj.isApplied ? "Applied" : "Apply Now", fontSize: 18)
                             .bold()
                             .frame(maxWidth: .infinity)
                             .padding()
-                            .background(Color(hex: "#2B304E"))
+                            .background(jobObj.isApplied ? .gray : Color(hex: "#2B304E"))
                             .foregroundColor(.white)
                             .cornerRadius(15)
                     }
@@ -152,7 +115,7 @@ struct InfoCard: View {
                     .foregroundColor(.white.opacity(0.7))
                     .multilineTextAlignment(.center)
                 
-                CustomText(fontText: value, fontSize: 18)
+                CustomText(fontText: value, fontSize: 16)
                     .bold()
                     .foregroundColor(.white)
                     .lineLimit(1)
@@ -170,7 +133,9 @@ struct QualificationCard: View {
     var text: String
     
     var body: some View {
+        
         VStack(alignment: .leading) {
+            
             Image(systemName: icon)
                 .font(.title2)
                 .foregroundColor(.black)
@@ -183,7 +148,7 @@ struct QualificationCard: View {
 //                .padding(.leading, 5)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .padding()
+//        .padding()
         .background(Color.white)
         .cornerRadius(10)
         .shadow(radius: 2)
@@ -192,6 +157,5 @@ struct QualificationCard: View {
 
 
 #Preview {
-    DetailsView(jobObj: Job(logo: Image("pinterest"), companyName: "Pinterest", designation: "iOS Developer", jobType: "Part Time", salary: "₹00K - ₹99K", requirement: "", skill: "", qualification: "", isBookmark: false, isApplied: false))
-    
+    DetailsView(jobObj: JobUIModel.preview)
 }

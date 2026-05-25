@@ -35,13 +35,13 @@ struct CustomMenuBar: View {
     
     @State private var selectedTab: Tab = .home
     // Keep a local editable resume to pass as a Binding to ProfileView
-    @State private var resume = Resume(
-        name: "John Doe",
-        email: "johndoe@example.com",
-        phone: "+1234567890",
-        sections: [],
-        rawText: ""
-    )
+//    @State private var resume = Resume(
+//        name: "John Doe",
+//        email: "johndoe@example.com",
+//        phone: "+1234567890",
+//        sections: [],
+//        rawText: ""
+//    )
 
     var body: some View {
             VStack(spacing: 0) {
@@ -49,16 +49,18 @@ struct CustomMenuBar: View {
                 ZStack {
                     switch selectedTab {
                     case .home:
-                        HomeView()
+//                        HomeView()
+                        EmptyView()
                     case .search:
-                        //                        SearchView()
-                        EmptyView()
+                        SearchView()
+//                        EmptyView()
                     case .saved:
-                        EmptyView()
+                        SavedJobsView()
+//                        EmptyView()
                     case .profile:
-                        //                        EmptyView()
+                                                EmptyView()
                         //                        ProfileView(resume: .constant(Resume(name: "John Doe", email: "johndoe@example.com", phone: "+1234567890", education: ["B.Sc. in Computer Science"], experience: ["Software Developer at XYZ Corp"], skills: ["Swift", "iOS", "Objective-C"])))
-                        ProfileView(resume: $resume)
+//                        ProfileView(resume: $resume)
                     }
                 }
                 // Bottom Menu Bar
